@@ -150,31 +150,6 @@ interface Child {
               </div>
             </div>
 
-            <!-- Specific Plans -->
-            <div class="grid-2 mt-3">
-              <div class="glass-panel plan-card">
-                <span class="badge badge-emerald">Best Seller</span>
-                <h3>Star Family Health Optima</h3>
-                <p class="plan-desc">A comprehensive super-floater health backup covering the entire nuclear family under a single sum insured with auto refill benefit.</p>
-                <ul class="plan-bullets">
-                  <li>✓ 3-times automatic restoration of sum insured</li>
-                  <li>✓ Coverage for newborn babies from Day 16</li>
-                  <li>✓ Assisted reproduction treatment coverage</li>
-                </ul>
-              </div>
-
-              <div class="glass-panel plan-card">
-                <span class="badge badge-emerald">Specialized</span>
-                <h3>Senior Citizens Red Carpet</h3>
-                <p class="plan-desc">Specially curated health insurance policy for elderly family members, offering medical security with minimal pre-medical tests.</p>
-                <ul class="plan-bullets">
-                  <li>✓ Coverage for entry age from 60 up to 75 years</li>
-                  <li>✓ Outpatient medical consultation cost cover</li>
-                  <li>✓ Pre-existing diseases covered after 12 months</li>
-                </ul>
-              </div>
-            </div>
-
             <!-- Dynamic Calculator -->
             <div class="glass-panel calculator-box mt-3">
               <h3>Star Health Premium Estimator</h3>
@@ -205,75 +180,172 @@ interface Child {
               </div>
             </div>
 
-            <!-- Data Collection Form -->
-            <div class="glass-panel form-card mt-3">
-              <div class="form-header">
-                <h3>Request Personalized Star Health Quote</h3>
-                <p>Provide details to customize your plan. All submissions are processed through official partner channels.</p>
-              </div>
-              <form (submit)="submitHealthForm($event)" class="quote-form">
-                <div class="form-row">
-                  <div class="form-group">
-                    <label>Proposer Full Name *</label>
-                    <input type="text" [(ngModel)]="healthForm.name" name="name" required class="glass-input">
-                  </div>
-                  <div class="form-group">
-                    <label>Age *</label>
-                    <input type="number" [(ngModel)]="healthForm.age" name="age" required class="glass-input" min="1">
-                  </div>
-                  <div class="form-group">
-                    <label>Gender *</label>
-                    <select [(ngModel)]="healthForm.gender" name="gender" required class="glass-input">
-                      <option value="">Select</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="form-row">
-                  <div class="form-group">
-                    <label>Father's Name</label>
-                    <input type="text" [(ngModel)]="healthForm.fatherName" name="fatherName" class="glass-input">
-                  </div>
-                  <div class="form-group">
-                    <label>Mother's Name</label>
-                    <input type="text" [(ngModel)]="healthForm.motherName" name="motherName" class="glass-input">
-                  </div>
-                </div>
-
-                <!-- Children Section -->
-                <div class="children-section">
-                  <div class="child-sec-header">
-                    <h4>Children Details</h4>
-                    <button type="button" (click)="addChild()" class="btn-text">+ Add Child</button>
-                  </div>
-                  @for (child of healthForm.children; track $index) {
-                    <div class="form-row child-row">
-                      <div class="form-group">
-                        <label>Child {{ $index + 1 }} Name</label>
-                        <input type="text" [(ngModel)]="child.name" name="childName_{{$index}}" class="glass-input" placeholder="Name">
-                      </div>
-                      <div class="form-group">
-                        <label>Child {{ $index + 1 }} Age</label>
-                        <input type="number" [(ngModel)]="child.age" name="childAge_{{$index}}" class="glass-input" placeholder="Age" min="0">
-                      </div>
-                      <button type="button" (click)="removeChild($index)" class="btn-remove">✕</button>
-                    </div>
-                  }
-                </div>
-
-                <div class="form-group mt-2">
-                  <label>Pre-Existing Diseases (PED) / Medical History Details</label>
-                  <textarea [(ngModel)]="healthForm.ped" name="ped" class="glass-input" rows="3" placeholder="Specify if any family members have Diabetes, BP, Asthma, Thyroid, or prior surgeries..."></textarea>
-                </div>
-
-                <div class="form-actions mt-3">
-                  <button type="submit" class="btn btn-emerald w-100">Submit Health Lead to Sujith Kumar</button>
-                </div>
-              </form>
+            <!-- Sub Navigation under Estimator -->
+            <div class="sub-tabs-container mt-3">
+              <button 
+                [class.active]="healthSubTab() === 'browse'" 
+                (click)="healthSubTab.set('browse')" 
+                class="sub-tab-btn">
+                🔍 Browse Star Health Plans
+              </button>
+              <button 
+                [class.active]="healthSubTab() === 'quote'" 
+                (click)="healthSubTab.set('quote')" 
+                class="sub-tab-btn">
+                📋 Request Personalized Star Health Quote
+              </button>
             </div>
+
+            @if (healthSubTab() === 'browse') {
+              <div class="grid-3 mt-3">
+                @for (plan of starHealthPlans; track plan.id) {
+                  <div class="glass-panel plan-detail-card" [class.expanded]="expandedPlanId() === plan.id">
+                    <div class="plan-image-wrapper">
+                      <img [src]="plan.image" [alt]="plan.name" class="plan-card-image">
+                      <span class="plan-badge"
+                        [class.plan-badge--preferred]="plan.badge === 'Most Preferred'"
+                        [class.plan-badge--popular]="plan.badge === 'Frequently Purchased'"
+                        [class.plan-badge--default]="plan.badge !== 'Most Preferred' && plan.badge !== 'Frequently Purchased'"
+                      >{{ plan.badge }}</span>
+                    </div>
+                    <div class="plan-card-body">
+                      <h3>{{ plan.name }}</h3>
+                      <p class="plan-desc-text">{{ plan.description }}</p>
+                      
+                      <button (click)="togglePlanExpand(plan.id)" class="btn-readmore">
+                        {{ expandedPlanId() === plan.id ? 'Hide Details ✕' : 'Read More & Details ➔' }}
+                      </button>
+
+                      @if (expandedPlanId() === plan.id) {
+                        <div class="plan-details-grid animated-expand">
+                          <div class="detail-section">
+                            <h5>🌟 Key Benefits</h5>
+                            <ul class="detail-list">
+                              @for (benefit of plan.keyBenefits; track $index) {
+                                <li>✓ {{ benefit }}</li>
+                              }
+                            </ul>
+                          </div>
+                          
+                          <div class="detail-section">
+                            <h5>🛡️ Coverages</h5>
+                            <ul class="detail-list">
+                              @for (coverage of plan.coverages; track $index) {
+                                <li>• {{ coverage }}</li>
+                              }
+                            </ul>
+                          </div>
+
+                          <div class="detail-meta">
+                            <p><strong>📋 Policy Terms:</strong> {{ plan.terms }}</p>
+                            <p><strong>👥 Eligibility:</strong> {{ plan.eligibility }}</p>
+                          </div>
+
+                          <div class="detail-section">
+                            <h5>💡 Advantages</h5>
+                            <ul class="detail-list">
+                              @for (adv of plan.advantages; track $index) {
+                                <li>✓ {{ adv }}</li>
+                              }
+                            </ul>
+                          </div>
+                        </div>
+                      }
+
+                      <button (click)="selectPlanForQuote(plan.name)" class="btn btn-emerald w-100 mt-auto pt-2 pb-2">
+                        Get Quotation
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (healthSubTab() === 'quote') {
+              <!-- Data Collection Form -->
+              <div class="glass-panel form-card mt-3">
+                <div class="form-header">
+                  <h3>Request Quote for {{ healthForm.selectedPlan || 'Star Health Insurance' }}</h3>
+                  <p>Provide details to customize your plan. All submissions are processed through official partner channels.</p>
+                </div>
+                <form (submit)="submitHealthForm($event)" class="quote-form">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Proposer Full Name *</label>
+                      <input type="text" [(ngModel)]="healthForm.name" name="name" required class="glass-input">
+                    </div>
+                    <div class="form-group">
+                      <label>Age *</label>
+                      <input type="number" [(ngModel)]="healthForm.age" name="age" required class="glass-input" min="1">
+                    </div>
+                    <div class="form-group">
+                      <label>Gender *</label>
+                      <select [(ngModel)]="healthForm.gender" name="gender" required class="glass-input">
+                        <option value="">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Preferred Plan</label>
+                      <select [(ngModel)]="healthForm.selectedPlan" name="selectedPlan" class="glass-input">
+                        <option value="">Any / General Health Insurance</option>
+                        <option value="Star Family Health Optima">Star Family Health Optima</option>
+                        <option value="Star Comprehensive Insurance">Star Comprehensive Insurance</option>
+                        <option value="Senior Citizens Red Carpet">Senior Citizens Red Carpet</option>
+                        <option value="Star Women Care Insurance">Star Women Care Insurance</option>
+                        <option value="Star Young Star Insurance">Star Young Star Insurance</option>
+                        <option value="Star Super Star">Star Super Star</option>
+                        <option value="Star Health Assure">Star Health Assure</option>
+                        <option value="Arogya Sanjeevani">Arogya Sanjeevani</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Father's Name</label>
+                      <input type="text" [(ngModel)]="healthForm.fatherName" name="fatherName" class="glass-input">
+                    </div>
+                    <div class="form-group">
+                      <label>Mother's Name</label>
+                      <input type="text" [(ngModel)]="healthForm.motherName" name="motherName" class="glass-input">
+                    </div>
+                  </div>
+
+                  <!-- Children Section -->
+                  <div class="children-section">
+                    <div class="child-sec-header">
+                      <h4>Children Details</h4>
+                      <button type="button" (click)="addChild()" class="btn-text">+ Add Child</button>
+                    </div>
+                    @for (child of healthForm.children; track $index) {
+                      <div class="form-row child-row">
+                        <div class="form-group">
+                          <label>Child {{ $index + 1 }} Name</label>
+                          <input type="text" [(ngModel)]="child.name" name="childName_{{$index}}" class="glass-input" placeholder="Name">
+                        </div>
+                        <div class="form-group">
+                          <label>Child {{ $index + 1 }} Age</label>
+                          <input type="number" [(ngModel)]="child.age" name="childAge_{{$index}}" class="glass-input" placeholder="Age" min="0">
+                        </div>
+                        <button type="button" (click)="removeChild($index)" class="btn-remove">✕</button>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="form-group mt-2">
+                    <label>Pre-Existing Diseases (PED) / Medical History Details</label>
+                    <textarea [(ngModel)]="healthForm.ped" name="ped" class="glass-input" rows="3" placeholder="Specify if any family members have Diabetes, BP, Asthma, Thyroid, or prior surgeries..."></textarea>
+                  </div>
+
+                  <div class="form-actions mt-3">
+                    <button type="submit" class="btn btn-emerald w-100">Submit Health Lead to Sujith Kumar</button>
+                  </div>
+                </form>
+              </div>
+            }
           </div>
         }
 
@@ -1065,10 +1137,232 @@ interface Child {
         transform: none;
       }
     }
+
+    /* Sub-tabs container styles */
+    .sub-tabs-container {
+      display: flex;
+      gap: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-top: 3rem;
+      margin-bottom: 2rem;
+    }
+    .sub-tab-btn {
+      background: transparent;
+      border: none;
+      padding: 1rem 0.5rem;
+      color: var(--text-secondary);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+    .sub-tab-btn:hover {
+      color: #FFFFFF;
+    }
+    .sub-tab-btn.active {
+      color: var(--primary-emerald);
+      border-bottom-color: var(--primary-emerald);
+    }
+
+    /* Dynamic browse plans cards layout */
+    .plan-detail-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      border: 1px solid var(--border-color);
+      background: rgba(17, 25, 40, 0.45);
+      backdrop-filter: blur(12px);
+    }
+    .plan-detail-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary-emerald);
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.15);
+    }
+    .plan-image-wrapper {
+      position: relative;
+      height: 180px;
+      overflow: hidden;
+      width: 100%;
+    }
+    .plan-card-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .plan-detail-card:hover .plan-card-image {
+      transform: scale(1.05);
+    }
+    .plan-badge {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 10;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: 6px;
+      line-height: 1;
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+    }
+
+    /* ── Most Preferred: gold/amber ribbon ── */
+    .plan-badge--preferred {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: #1C1207;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      animation: badge-glow-gold 2.5s ease-in-out infinite;
+    }
+    .plan-badge--preferred::before {
+      content: '⭐';
+      font-size: 0.8rem;
+    }
+
+    /* ── Frequently Purchased: blue/cyan ── */
+    .plan-badge--popular {
+      background: linear-gradient(135deg, #3B82F6, #2563EB);
+      color: #FFFFFF;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      animation: badge-glow-blue 2.5s ease-in-out infinite;
+    }
+    .plan-badge--popular::before {
+      content: '🔥';
+      font-size: 0.8rem;
+    }
+
+    /* ── Default badges (Best Seller, All-Inclusive, etc.) ── */
+    .plan-badge--default {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: #FFFFFF;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes badge-glow-gold {
+      0%, 100% { box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35); }
+      50% { box-shadow: 0 4px 22px rgba(245, 158, 11, 0.6); }
+    }
+    @keyframes badge-glow-blue {
+      0%, 100% { box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35); }
+      50% { box-shadow: 0 4px 22px rgba(59, 130, 246, 0.6); }
+    }
+    .plan-card-body {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      gap: 1.25rem;
+    }
+    .plan-card-body h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin: 0;
+    }
+    .plan-desc-text {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .plan-details-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      flex-grow: 1;
+    }
+    .detail-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .detail-section h5 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--primary-emerald);
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .detail-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .detail-list li {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .detail-meta {
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .detail-meta p {
+      margin: 0;
+      line-height: 1.4;
+    }
+    .btn-readmore {
+      background: transparent;
+      border: none;
+      color: var(--primary-emerald);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 0.5rem 0;
+      text-align: left;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.2s ease, transform 0.2s ease;
+      width: fit-content;
+    }
+    .btn-readmore:hover {
+      color: #FFFFFF;
+      transform: translateX(3px);
+    }
+    .animated-expand {
+      animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    @keyframes slideDown {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   `]
 })
 export class ServicesComponent {
   activeTab = signal<'health' | 'life' | 'savings' | 'travel' | 'vehicle' | 'home'>('health');
+  healthSubTab = signal<'browse' | 'quote'>('browse');
+  expandedPlanId = signal<string | null>(null);
   sliderVal = signal<number>(2.5);
   showSuccess = signal<boolean>(false);
 
@@ -1090,6 +1384,7 @@ export class ServicesComponent {
     fatherName: '',
     motherName: '',
     ped: '',
+    selectedPlan: '',
     children: [] as Child[]
   };
 
@@ -1100,6 +1395,212 @@ export class ServicesComponent {
     sumAssured: '',
     payingTerm: ''
   };
+
+  starHealthPlans = [
+    {
+      id: 'family-optima',
+      name: 'Star Family Health Optima',
+      badge: 'Best Seller',
+      image: '/family_health.png',
+      description: 'A comprehensive super-floater health backup covering the entire nuclear family under a single sum insured with auto-refill benefits.',
+      keyBenefits: [
+        '3-times automatic restoration of sum insured at no extra cost',
+        'Coverage for newborn babies from the 16th day of birth',
+        'Assisted reproduction treatment coverage up to limit'
+      ],
+      coverages: [
+        'In-patient hospitalization expenses (room rent, nursing, boarding)',
+        'Emergency road ambulance charges',
+        'Pre-hospitalization (60 days) and Post-hospitalization (90 days) cover'
+      ],
+      terms: 'Sum Insured: ₹3 Lakhs to ₹25 Lakhs | Policy Term: 1, 2, or 3 Years',
+      eligibility: 'Adults: 18 - 65 years. Dependent Children: 16 days - 25 years.',
+      advantages: [
+        'No pre-acceptance medical screening required up to 50 years of age',
+        'Coverage for modern treatments and day care procedures'
+      ]
+    },
+    {
+      id: 'comprehensive',
+      name: 'Star Comprehensive Insurance',
+      badge: 'All-Inclusive',
+      image: '/comprehensive_health.png',
+      description: 'An all-inclusive premium medical insurance policy with no sub-limits on room rent and extensive outpatient support.',
+      keyBenefits: [
+        'No sub-limits on room rent or ICU charges',
+        'Outpatient dental and ophthalmic treatments cover after waiting period',
+        'Personal accident and air ambulance coverage included'
+      ],
+      coverages: [
+        'Maternity and newborn cover (including vaccination limits)',
+        'Bariatric surgery and psychiatric treatment cover',
+        'Organ donor expenses cover and automatic restoration of sum insured'
+      ],
+      terms: 'Sum Insured: ₹5 Lakhs to ₹1 Crore | Policy Term: 1, 2, or 3 Years',
+      eligibility: 'Adults: 18 - 65 years. Children: 3 months - 25 years.',
+      advantages: [
+        'Free health checkup benefit for every claim-free year',
+        'Wellness points program offering premium discounts up to 10%'
+      ]
+    },
+    {
+      id: 'super-star',
+      name: 'Star Super Star',
+      badge: 'Most Preferred',
+      image: '/super_star_health.png',
+      description: 'A high-benefit policy offering substantial top-up medical covers to absorb large hospitalization bills exceeding basic insurance limits.',
+      keyBenefits: [
+        'Massive sum insured booster up to ₹1 Crore at cost-effective rates',
+        'Air ambulance cover and emergency medical evacuation benefits',
+        'In-patient hospitalization cover with no sub-limits on room rent'
+      ],
+      coverages: [
+        'ICU/ICCU charges and professional specialist consultation fees',
+        'Pre-hospitalization (60 days) and Post-hospitalization (90 days) cover',
+        'Organ donor expenses and modern medical treatment procedures'
+      ],
+      terms: 'Sum Insured: ₹5 Lakhs to ₹1 Crore | Policy Term: 1 or 2 Years',
+      eligibility: 'Adults: 18 - 65 years. Children: 91 days - 25 years.',
+      advantages: [
+        'Works as an affordable safety net alongside any standard base health policy',
+        'No pre-policy medical checkup required up to 50 years of age'
+      ]
+    },
+    {
+      id: 'health-assure',
+      name: 'Star Health Assure',
+      badge: 'Frequently Purchased',
+      image: '/comprehensive_health.png',
+      description: 'A modern, feature-loaded comprehensive policy with automatic restoration, cumulative bonus, and wellness discounts.',
+      keyBenefits: [
+        'Unlimited automatic restoration of sum insured for subsequent claims',
+        'Cumulative bonus up to 100% of sum insured on consecutive renewals',
+        'Assisted reproduction treatment coverage up to specified limits'
+      ],
+      coverages: [
+        'Hospitalization expenses (room, boarding, nursing)',
+        'Organ donor expenses cover and newborn baby cover from day 1',
+        'Air ambulance cover and domiciliary hospitalization'
+      ],
+      terms: 'Sum Insured: ₹5 Lakhs to ₹75 Lakhs | Policy Term: 1, 2, or 3 Years',
+      eligibility: 'Adults: 18 - 75 years. Dependent children covered.',
+      advantages: [
+        'Unlimited automatic restoration ensures you never run out of sum insured',
+        'Wellness points program offering premium discount up to 10%'
+      ]
+    },
+    {
+      id: 'senior-red-carpet',
+      name: 'Senior Citizens Red Carpet',
+      badge: 'Frequently Purchased',
+      image: '/senior_health.png',
+      description: 'Specially curated medical security for senior citizens, offering simplified entry and pre-existing disease coverage.',
+      keyBenefits: [
+        'Pre-existing diseases covered after a shorter waiting period of 12 months',
+        'Outpatient medical consultation cost cover in network hospitals',
+        'No pre-policy medical checkup required for enrollment'
+      ],
+      coverages: [
+        'Hospitalization expenses (room, boarding, nursing)',
+        'Daycare treatments and modern medical procedures',
+        'Sub-limits apply to specific ailments for lower premiums'
+      ],
+      terms: 'Sum Insured: ₹1 Lakh to ₹25 Lakhs | Policy Term: 1, 2, or 3 Years',
+      eligibility: 'Entry Age: 60 - 75 years. Lifelong renewability.',
+      advantages: [
+        'Co-payment is flat 30% for all claims, lowering premium cost',
+        'Guaranteed hassle-free in-house claim settlements'
+      ]
+    },
+    {
+      id: 'women-care',
+      name: 'Star Women Care Insurance',
+      badge: 'Women Specialized',
+      image: '/women_health.png',
+      description: 'A unique policy designed specifically to address the healthcare needs of women at different stages of their lives.',
+      keyBenefits: [
+        'Maternity cover including normal and C-section deliveries',
+        'In-utero fetal surgery cover and newborn baby health shield',
+        'Assisted reproduction treatment benefits included'
+      ],
+      coverages: [
+        'Maternity-related hospitalization and post-delivery expenses',
+        'Ante-natal care expenses cover',
+        'Star Mother Cover: room rent for mother if child is in ICU'
+      ],
+      terms: 'Sum Insured: ₹5 Lakhs to ₹1 Crore | Policy Term: 1, 2, or 3 Years',
+      eligibility: 'Females aged 18 - 75 years. Dependent girls covered.',
+      advantages: [
+        'No-claim bonus of 20% of sum insured for each claim-free year',
+        'Automatic restoration of sum insured up to 100%'
+      ]
+    },
+    {
+      id: 'young-star',
+      name: 'Star Young Star Insurance',
+      badge: 'Young Adults',
+      image: '/young_health.png',
+      description: 'Affordable health protection tailored for young adults under 40, incentivizing early health investments.',
+      keyBenefits: [
+        'No pre-policy medical test required for any sum insured',
+        'Special early bird discount: 10% off premiums if entry before age 36',
+        'Automatic restoration of sum insured up to 100% instantly'
+      ],
+      coverages: [
+        'Hospitalization room rent and ICU charges covered',
+        'Modern treatments, road ambulance, and pre/post hospitalization costs',
+        'Mid-term inclusion of spouse/child allowed on marriage/birth'
+      ],
+      terms: 'Sum Insured: ₹3 Lakhs to ₹20 Lakhs | Policy Term: 1 or 2 Years',
+      eligibility: 'Entry Age: 18 - 40 years. Renewals up to lifelong.',
+      advantages: [
+        'Wellness discount of up to 10% based on fitness tracking points',
+        'Cumulative bonus of 20% per year up to 100% of sum insured'
+      ]
+    },
+    {
+      id: 'arogya-sanjeevani',
+      name: 'Arogya Sanjeevani',
+      badge: 'Standard Cover',
+      image: '/family_health.png',
+      description: 'A standardized health insurance policy mandated by IRDAI, offering basic essential coverage at highly affordable premium rates.',
+      keyBenefits: [
+        'Standardized policy terms across all insurers for absolute transparency',
+        'Capped room rent (2% of sum insured up to ₹5,000/day)',
+        'Cumulative bonus of 5% for each claim-free year (up to 50%)'
+      ],
+      coverages: [
+        'Basic hospitalization expense cover (ICU capped at 5%)',
+        'Cataract treatment cover up to specified limits',
+        'AYUSH (non-allopathic) treatment cover included'
+      ],
+      terms: 'Sum Insured: ₹1 Lakh to ₹5 Lakhs (Standard) | Policy Term: 1 Year',
+      eligibility: 'Adults: 18 - 65 years. Children: 3 months - 25 years.',
+      advantages: [
+        'Highly economical premiums designed for basic safety nets',
+        'Simple, standard terms with no hidden conditions'
+      ]
+    }
+  ];
+
+  togglePlanExpand(planId: string) {
+    if (this.expandedPlanId() === planId) {
+      this.expandedPlanId.set(null);
+    } else {
+      this.expandedPlanId.set(planId);
+    }
+  }
+
+  selectPlanForQuote(planName: string) {
+    this.healthForm.selectedPlan = planName;
+    this.healthSubTab.set('quote');
+    setTimeout(() => {
+      const element = document.querySelector('.form-card');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  }
 
   // Computations
   healthEstimatedPremium = computed(() => {
@@ -1163,6 +1664,7 @@ export class ServicesComponent {
       fatherName: '',
       motherName: '',
       ped: '',
+      selectedPlan: '',
       children: []
     };
     this.showSuccess.set(true);

@@ -26,8 +26,8 @@ import { CommonModule } from '@angular/common';
               <span class="tile-icon">📞</span>
               <div>
                 <h4>Direct Phone Calling</h4>
-                <p class="tile-detail">+91 98765 43210</p>
-                <p class="tile-detail">+91 80 4567 8901</p>
+                <p class="tile-detail"><a href="tel:+919994738638">+91 99947 38638</a></p>
+                <p class="tile-detail"><a href="https://wa.me/919445525225" target="_blank">+91 94455 25225</a> (WhatsApp)</p>
                 <span>Mon - Sat, 9:00 AM - 7:00 PM</span>
               </div>
             </div>
@@ -36,8 +36,8 @@ import { CommonModule } from '@angular/common';
               <span class="tile-icon">📧</span>
               <div>
                 <h4>Official Correspondence</h4>
-                <p class="tile-detail">sujith&#64;skinsurance.in</p>
-                <p class="tile-detail">claims&#64;skinsurance.in</p>
+                <p class="tile-detail"><a href="mailto:sujith2133@outlook.com">sujith2133&#64;outlook.com</a></p>
+                <p class="tile-detail"><a href="mailto:sujith2133s@gmail.com">sujith2133s&#64;gmail.com</a></p>
                 <span>We reply within 3-6 hours</span>
               </div>
             </div>
@@ -47,7 +47,7 @@ import { CommonModule } from '@angular/common';
               <div>
                 <h4>Advisory Office</h4>
                 <p class="tile-detail">SK Insurance Advisory</p>
-                <p class="tile-desc">3rd Floor, Sky Tower, MG Road, Bengaluru, Karnataka - 560001</p>
+                <p class="tile-desc">Plot No: 59, Ananad Nagar, Madurantakam, Chengalpattu, TN-603306</p>
               </div>
             </div>
             
@@ -182,6 +182,14 @@ import { CommonModule } from '@angular/common';
       font-size: 1.1rem;
       font-weight: 500;
       color: #FFFFFF;
+    }
+    .tile-detail a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .tile-detail a:hover {
+      color: var(--primary-emerald);
     }
     .tile-desc {
       color: var(--text-secondary);
