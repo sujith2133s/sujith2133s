@@ -1605,7 +1605,7 @@ export class ServicesComponent {
   // Computations
   healthEstimatedPremium = computed(() => {
     let base = 8500;
-    
+
     // Age multiplier
     if (this.healthCalcAge < 30) base *= 1.0;
     else if (this.healthCalcAge < 45) base *= 1.35;
@@ -1624,7 +1624,7 @@ export class ServicesComponent {
   lifeEstimatedPremium = computed(() => {
     // Basic approximation of LIC term premium scales
     let baseRatePerThousand = 1.6; // average scale per 1k sum assured
-    
+
     // Age factor
     if (this.lifeCalcAge < 30) baseRatePerThousand *= 0.8;
     else if (this.lifeCalcAge < 45) baseRatePerThousand *= 1.25;
@@ -1633,7 +1633,7 @@ export class ServicesComponent {
 
     // Paying Term discount (longer term reduces annual base slightly)
     const termFactor = 15 / this.lifeCalcTerm;
-    
+
     const yearly = (this.lifeCalcSumAssured / 1000) * baseRatePerThousand * termFactor;
     return yearly / 12;
   });
